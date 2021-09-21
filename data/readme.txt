@@ -1,6 +1,6 @@
 
-gene_age file contains  age idntification of human genes and it was obtained from the supplementary table 1 of the Yin et al.'s paper[1]
-all_gene file contains the TSGs , Oncogenes , Non-cancer genes  list we used in our previous paper[2]
+gene_age.txt file contains  age idntification of human genes and it was obtained from the supplementary table 1 of the Yin et al.'s paper[1]
+all_gene.csv file contains the TSGs , Oncogenes , Non-cancer genes  list we used in our previous paper[2]
 
 
 

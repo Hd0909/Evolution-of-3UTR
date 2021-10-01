@@ -5,9 +5,11 @@
 This resource provides the R code and processed data to reproduce key results described in Dan H, et al. 3' Untranslated Regions of Tumor Suppressor Genes Evolved Specific Features to Favor Cancer Resistance.
 
 ### Getting started
-**1.** Clone Github repository. 
+**1.** Clone Github repository and get the data from google drive. 
 ```
 git clone https://github.com/Hd0909/Evolution-of-3UTR.git
+download the rdata from the  following link
+https://drive.google.com/file/d/1AIHGz3qQJlqTqoGSNNqeFJbF7VIdyKVa/view?usp=sharing
 ```
 **2.** Install required R packages.
 ```

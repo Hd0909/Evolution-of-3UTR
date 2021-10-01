@@ -242,6 +242,14 @@ genes_infor$hg38_3utr_ratio_cds<-genes_infor$hg38_3UTR_length/genes_infor$cds_le
 print("genes_name")
 rownames(genes_infor)<-genes_infor[,1]
 
+fimo <- read.delim("/media/huangdan/hardisk0/HD/my_data/HD_evolution/result_UTR/meme_RNA_3/fimo.tsv", comment.char="#")
+geneid=substr(fimo$sequence_name,17,31)
+genes_infor$motif=rep("C-rich_motif-",length(genes_infor$ensembl_gene_id))
+genes_infor$motif[genes_infor$ensembl_gene_id %in% geneid]="C-rich_motif+"
+temp_x<-table(geneid)
+genes_infor$motif_count=as.numeric(temp_x[genes_infor$ensembl_gene_id])
+genes_infor$motif_count_density=log10(genes_infor$motif_count/genes_infor$hg38_3UTR_length)
+
 
 save(genes_infor,all_data_genes,file=paste("./data/genes_infor_downloaded_from_ensembl97.rdata",sep=""))
 ##### print("other species")

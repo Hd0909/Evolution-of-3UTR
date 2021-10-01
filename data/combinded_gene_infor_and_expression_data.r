@@ -1,14 +1,16 @@
 
 source('functions/functions_evolution.r')
-load("./data/genes_infor_downloaded_from_ensembl97.rdata")
-load("./data/get_exp_data_1000_100_indepentant.rdata")
 load("./data/processing_validation_datasets.RData")
+load("./data/get_exp_data_1000_100_indepentant.rdata")
+
+load("./data/genes_infor_downloaded_from_ensembl97.rdata")
+
 print(head(result_all_indepent))
 print(str(result_all_indepent))
 all_data_tsg=result_all_indepent
 gene_age_infor <- read.delim("./data/gene_age_infor.txt")
 rownames(gene_age_infor)<-gene_age_infor$Age.class
-
+genes_infor$Origin.time..million.years.ago..<-gene_age_infor[genes_infor$Age_class,"Origin.time..million.years.ago.."]
 ##### dividing the genes into different classes based on the gene ages
 cut_x=c(0,7,14,18,23,27)
 cut_lable=c()
@@ -26,6 +28,11 @@ all_data_tsg$age_type2=genes_infor[all_data_tsg$ensembl_gene_id,"age_type2"]
 
 
 rownames(genes_infor)<-genes_infor$ensembl_gene_id
+
+
+
+
+
 
 
 all_data_tsg$hg38_3utr_to_cds=genes_infor[all_data_tsg$ensembl_gene_id,]$hg38_3utr_to_cds
@@ -61,6 +68,13 @@ all_data_tsg_all_genes=all_data_tsg
 all_data_tsg<-all_data_tsg[which(all_data_tsg$Gene.Type!="Oncogene"),]
 
 
+all_data_tsg$motif_count_density<-genes_infor[all_data_tsg$ensembl_gene_id,"motif_count_density"]
+all_data_tsg_all_genes$motif_count_density<-genes_infor[all_data_tsg_all_genes$ensembl_gene_id,"motif_count_density"]
+
+all_data_tsg_all_genes$motif_count<-log10(genes_infor[all_data_tsg_all_genes$ensembl_gene_id,"motif_count"])
+genes_infor$rbp_motif<-paste(genes_infor$rbp,genes_infor$motif)
+
+
 
 
 
@@ -80,10 +94,6 @@ filter_low_data<-function(all_data_tsg){
 
 all_data_tsg_filtered=filter_low_data(all_data_tsg )
 all_data_tsg_filtered$diff_exp=abs(all_data_tsg_filtered$diff_exp)
-
-exp_norm_TSMI_RNA<-aggregate(GTEXmedian_tpm$norm_exp,list(GTEXmedian_tpm$Gene.ID),get_TSEI_log2)
-rownames(exp_norm_TSMI_RNA)<-exp_norm_TSMI_RNA[,1]
-genes_infor$TSMI_tissue_specificity_RNA=exp_norm_TSMI_RNA[genes_infor$ensembl_gene_id,2]
 
 
 save.image("./data/combined_gene_infor_expression_data.RData")

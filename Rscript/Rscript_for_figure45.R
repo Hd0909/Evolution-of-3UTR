@@ -1,3 +1,4 @@
+setwd("/media/huangdan/hardisk0/HD/my_data/HD_evolution/final_program_UTR9_21")
 load("./data/combined_gene_infor_expression_data.RData")
 source('functions/functions_evolution.r')
 
@@ -71,15 +72,33 @@ p_rbp_box<-ggplot(data=all_data_tsg_filtered[all_data_tsg_filtered$cancer=="COAD
 
 
 
+tissue=c("Brain","Heart","Lung","Kidney","Liver","Muscle","Placenta","Stomach")
+m6a_3utr<-c()
+m6a_5utr<-c()
+for(t1 in tissue){
+  temp <- read.delim(paste("/media/huangdan/hardisk0/HD/my_data/HD_evolution/result_UTR/m6a/GSE114150_",t1,"_3UTR.bed",sep=""), header=FALSE, stringsAsFactors=FALSE)
+  temp_genes_infor=genes_infor
+  temp_genes_infor$m6a=ifelse(temp_genes_infor$ensembl_gene_id %in% temp[,4],"+","-")
+  m6a_3utr<-rbind(m6a_3utr,cbind(cancer=paste("GSE114150     ",t1),temp_genes_infor))
+  
+  temp2 <- read.delim(paste("/media/huangdan/hardisk0/HD/my_data/HD_evolution/result_UTR/m6a/GSE114150_",t1,"_5UTR.bed",sep=""), header=FALSE, stringsAsFactors=FALSE)
+  temp_genes_infor2=genes_infor
+  temp_genes_infor2$m6a=ifelse(temp_genes_infor2$ensembl_gene_id %in% temp2[,4],"+","-")
+  m6a_5utr<-rbind(m6a_5utr,cbind(cancer=paste("GSE114150       ",t1),temp_genes_infor2))
+  
+}
 
+m6a_3utr2=m6a_3utr[m6a_3utr$Gene.Type!="Oncogene" ,]
+m6a_5utr2=m6a_5utr[m6a_5utr$Gene.Type!="Oncogene" ,]
 
+all_m6a<-rbind(m6a_3utr2,repicm6a_3utr[,colnames(m6a_3utr2)])
 
-sif_repicm6a3=getsigm6a_diff(all_data_tsg_filtered,repicm6a_3utr,2,"diff_exp")
+sif_repicm6a3=getsigm6a_diff(all_data_tsg_filtered,all_m6a,2,"diff_exp")
 pff_tcga_repicm6a_all<-plotForesttwogroup(sif_repicm6a3,"Abs(Log2FC) of Down-regulated TSG in TCGA","4.2mm","Potential m6A+","Potential m6A-")
 pff_tcga_repicm6a<-pff_tcga_repicm6a_all$p1
 ggarrange(pff_tcga_repicm6a)
 
-sif_repicm6a3_len=getsigm6a_difflen(repicm6a_3utr[repicm6a_3utr$Gene.Type=="TSG",],4,"hg38_3UTR_length_log","m6a")
+sif_repicm6a3_len=getsigm6a_difflen(all_m6a[all_m6a$Gene.Type=="TSG",],4,"hg38_3UTR_length_log","m6a")
 pff_repicm6a_len_all<-plotForesttwogroup(sif_repicm6a3_len,"Log10(3UTR Length) of TSGs","1mm","3UTR m6A+","3UTR m6A-")
 pff_repicm6a_len<-pff_repicm6a_len_all$p1
 temp_Example<-repicm6a_3utr[repicm6a_3utr$Gene.Type=="TSG" & repicm6a_3utr$cancer=="SRP007335       embryonic kidney cells",]
@@ -87,7 +106,7 @@ rownames(temp_Example)<-temp_Example$ensembl_gene_id
 p_m6alen<-ggplot(data=temp_Example,aes(x=m6a,y=hg38_3UTR_length_log,fill=m6a))+geom_boxplot(show.legend = FALSE,width=0.5,size=1)+geom_signif(comparisons = list(c("+","-")), test='wilcox.test', map_signif_level=T,col="black",step_increase=0.1,textsize = 4.8,fontface="bold",y_position = 4.4)+ylab("Log10(3UTR Length) of TSGs") +scale_fill_manual(values=c( "#F0FFFF","#1874CD"))+theme_hd()+scale_x_discrete(labels= c("m6A-","m6A+"))+ggtitle("SRP007335 \nembryonic kidney cells")+ theme(plot.title = element_text(face = "bold"))+xlab("m6A modification in 3'UTR")
 
 
-x=table(repicm6a_3utr[repicm6a_3utr$m6a=="+",]$ensembl_gene_id)
+x=table(all_m6a[all_m6a$m6a=="+",]$ensembl_gene_id)
 all_data_tsg_filtered$m6a=0
 all_data_tsg_filtered$m6a=x[all_data_tsg_filtered$ensembl_gene_id]
 all_data_tsg_filtered$m6a[is.na(all_data_tsg_filtered$m6a)]=0
@@ -118,9 +137,9 @@ dev.off()
 
 
 
-cut_tcga<-getSMDforestcutoff(all_data_tsg_filtered,repicm6a_3utr,"diff_exp","Potential  m6A+","Potential  m6A-")
+cut_tcga<-getSMDforestcutoff(all_data_tsg_filtered,all_m6a,"diff_exp","Potential  m6A+","Potential  m6A-")
 
-
+ggplot(data = cut_tcga,aes(x=cutoff,y=smd,col=cancer))+geom_boxplot()
 
 
 all_data_tsg_filtered$PPI_number_log<-genes_infor[all_data_tsg_filtered$ensembl_gene_id,"PPI_number_log"]
@@ -238,7 +257,7 @@ dev.off()
 p_cor_rbp_tsg<-plotForest(all_data_tsg_filtered,"diff_exp","rbp_site_binding_density2","Pearson's r(Log10(RBPs binding density in 3'UTR) VS abs(log2FC))\n Down-regulated TSG in Validation data",0.9,1.1,"1cm")
 
 
-tiff("./result/supplymentary_figure10.tiff",width = 13,height = 13,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure11.tiff",width = 13,height = 13,res=300,units="in",compression = "lzw")
 sp1=plot_scatter_2(all_data_tsg_filtered[ all_data_tsg_filtered$cancer !="COAD",],"hg38_3UTR_length_log","diff_exp","Log10(Length of 3'UTR)",
                    "Abs(Log2FC) of Down-regulated TSGs",0.01,15,"black")+ggtitle("TCGA RNA-seq data")+theme(strip.background = element_blank())+ guides(colour = "none",fill = "none")+scale_color_manual(values=c("black"))+facet_wrap(~cancer,nrow=4)
 print(sp1)
@@ -248,14 +267,12 @@ dev.off()
 
 
 
-tiff("./result/supplymentary_figure11.tiff",width = 13,height = 13,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure12.tiff",width = 13,height = 13,res=300,units="in",compression = "lzw")
 sp1=plot_scatter_2(all_data_tsg_filtered[ all_data_tsg_filtered$cancer !="COAD",],"PPI_number_log","diff_exp","Log10(PPI number)",
                    "Abs(Log2FC) in Down-regulated TSGs",0.01,15,"black")+ggtitle("TCGA RNA-seq data")+theme(strip.background = element_blank())+ guides(colour = "none",fill = "none")+scale_color_manual(values=c("black"))+facet_wrap(~cancer,nrow=4)
 print(sp1)
 
 dev.off()
-
-
 
 
 

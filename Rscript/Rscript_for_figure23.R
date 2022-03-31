@@ -28,7 +28,7 @@ p_berbp_cor<-plot_scatter_6(genes_infor[genes_infor$Gene.Type!="Oncogene",],"hg3
 
 
 
-p_berbp_density=ggplot(data = genes_infor[genes_infor$Gene.Type!="Oncogene",],aes(y=rbp_site_binding_density2,x=Gene.Type,fill=Gene.Type))+geom_boxplot(width=0.4)+ylab("Log10(RBPs binding \ndensity in 3'UTR)")+geom_signif(comparisons = list(c("TSG","Non-Cancer")),map_signif_level=T,col="black", test='wilcox.test',fontface="bold",y_position = 0)+theme_hd()+theme(axis.title.x = element_blank(),legend.position = "none" )+scale_fill_manual(values=c("#1874CD","#EE2C2C"))
+p_berbp_density=ggplot(data = genes_infor[genes_infor$Gene.Type!="Oncogene",],aes(y=rbp_site_binding_density2,x=Gene.Type,fill=Gene.Type))+geom_boxplot(width=0.4)+ylab("Log10(RBPs binding \ndensity in 3'UTR)")+geom_signif(comparisons = list(c("TSG","Non-Cancer")),map_signif_level=T,col="black", test='wilcox.test',fontface="bold",y_position = -0.4)+theme_hd()+theme(axis.title.x = element_blank(),legend.position = "none" )+scale_fill_manual(values=c("#1874CD","#EE2C2C"))
 #axis.text.x=element_text(angle = 30,hjust = 1),
 
 p_berbp_count=ggplot(data = genes_infor[genes_infor$Gene.Type!="Oncogene",],aes(y=rbp_site_binding2,x=Gene.Type,fill=Gene.Type))+geom_boxplot(aes(col=I("gray90")),width=0.4)+ylab("No.of RBPs binding site in 3'UTR)")+geom_signif(comparisons = list(c("TSG","Non-Cancer")),map_signif_level=T,col="black", test='wilcox.test',fontface="bold")+ xlab("Dataset")+theme_hd()+theme(axis.text.x=element_text(colour = "white") )+xlab("")+scale_fill_manual(values=c("#1874CD","#EE2C2C"))+xlab("Gene Types")
@@ -118,7 +118,7 @@ s1_rbp=ggplot(data = all_data_tsg,aes(y=norm_exp,x=cancer,fill=rbp))+geom_boxplo
 genes_infor=genes_infor[genes_infor$Gene.Type!="Oncogene",]
 x1=table(genes_infor$rbp , genes_infor$Gene.Type)
 fisher.test(x1)
-x1[1,]/apply(x1,2,sum)
+x1[2,]/apply(x1,2,sum)
 
 x1=table(genes_infor$miRNA , genes_infor$Gene.Type)
 fisher.test(x1)
@@ -281,7 +281,7 @@ dev.off()
 
 
 
-tiff("./result/supplymentary_figure6.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure7.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
 p<-plotSubSigall4(all_data_tsg[all_data_tsg$cancer!="COAD" & !is.na(all_data_tsg$age_type2),],"age_type2", "norm_exp","Gene.Type","", cols1 = c("#1874CD","#EE2C2C"),"Gene Age Groups(million years)","Gene Expression") 
 print(p)
 dev.off()
@@ -297,16 +297,16 @@ all_data_tsg$age_type3[all_data_tsg$age_type3%in% c("(67.6 - 355.7]","(0 - 67.6]
 all_data_tsg$age_type3<-as.factor(all_data_tsg$age_type3)
 #,pcor_rerbp,pcor_motif,
 
-tiff("./result/supplymentary_figure7.tiff",width = 7,height = 7,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure8.tiff",width = 7,height = 7,res=300,units="in",compression = "lzw")
 print(p_cor_age_tcgs)
 dev.off()
 
-tiff("./result/supplymentary_figure8.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure9.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
 p<-plotSubSigall4(all_data_tsg[all_data_tsg$cancer!="COAD" & !is.na(all_data_tsg$age_type2),],"age_type2", "norm_exp","rbp","", cols1 = c("#76EE00","darkgreen"),"Gene Age Groups(million years)","Gene Expression") 
 print(p)
 dev.off()
 
-tiff("./result/supplymentary_figure9.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
+tiff("./result/supplymentary_figure10.tiff",width = 13,height = 16,res=300,units="in",compression = "lzw")
 p<-plotSubSigall4(all_data_tsg[all_data_tsg$cancer!="COAD" & !is.na(all_data_tsg$age_type2),],"age_type2", "norm_exp","motif","", cols1 = c("#76EE00","darkgreen"),"Gene Age Groups(million years)","Gene Expression") 
 print(p)
 dev.off()
